@@ -1,0 +1,101 @@
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+class RateMyScheduleTest {
+
+	@Test
+	void testProfessor() {
+		ArrayList<String> testTags = new ArrayList<>();
+		testTags.add("accessibleoutsideclass");
+		Professor testProf = new Professor("Motro", "5241", "1.1", "1.0", testTags);
+		assertEquals("Motro", testProf.getName());
+		assertEquals("5241", testProf.getTid());
+		assertEquals("1.1", testProf.getGpa());
+		assertEquals("1.0", testProf.getRating());
+		testProf.SetName("Ortom");
+		assertEquals("Ortom", testProf.getName());
+	}
+	
+	@Test
+	void testClass() {
+		ArrayList<String> testTags = new ArrayList<>();
+		testTags.add("accessibleoutsideclass");
+		Professor testProf = new Professor("Motro", "5241", "1.1", "1.0", testTags);
+		Class testClass = new Class("3.5", "cs333", testProf);
+		assertEquals("0", testClass.getProjected());
+		testClass.setProjected("3");
+		assertEquals("3", testClass.getProjected());
+		assertEquals("cs333", testClass.getName());
+		assertEquals(testProf, testClass.getProfessor());
+		assertEquals("3.5", testClass.getOverallGPA());
+	}
+	
+	@Test
+	void testStudent() {
+		ArrayList<String> testTags = new ArrayList<>();
+		testTags.add("accessibleoutsideclass");
+		Professor testProf = new Professor("Motro", "5241", "1.1", "1.0", testTags);
+		Class testClass = new Class("3.5", "cs333", testProf);
+		List<String> testPref = new ArrayList<String>();
+		testPref.add("0");
+		testPref.add("1");
+		testPref.add("0");
+		testPref.add("1");
+		testPref.add("1");
+		Student testStudent = new Student(testPref);
+		testStudent.addClass(testClass);
+		assertEquals(testClass, testStudent.getSchedule().get(0));
+		assertEquals("0", testStudent.getPreferences().get(0));
+		assertEquals("1", testStudent.getPreferences().get(1));
+		assertEquals("0", testStudent.getPreferences().get(2));
+		assertEquals("1", testStudent.getPreferences().get(3));
+		assertEquals("1", testStudent.getPreferences().get(4));
+		testStudent.setSchedule();
+		assertEquals(null, testStudent.getSchedule());
+		assertEquals(Arrays.asList("0","1","0","1","1"), testStudent.getPreferences());
+		assertEquals(-3, testStudent.getEuclidian(testPref, Arrays.asList("0","0","0","0","0")));
+	}
+	
+	@Test
+	void testFullClass() {
+		ArrayList<String> testTags = new ArrayList<>();
+		testTags.add("accessibleoutsideclass");
+		Professor testProf = new Professor("Motro", "5241", "1.1", "1.0", testTags);
+		ArrayList<Professor> testProfList = new ArrayList<>();
+		testProfList.add(testProf);
+		FullClass testFullClass = new FullClass(testProfList, "2.7", "cs211");
+		assertEquals("cs211", testFullClass.getName());
+		assertEquals(testProf, testFullClass.getProfessor().get(0));
+		assertEquals("2.7", testFullClass.getOverallGPA());
+	}
+	
+	@Test
+	void testAnalyzer() {
+		ArrayList<String> testTags = new ArrayList<>();
+		testTags.add("accessibleoutsideclass");
+		Professor testProf = new Professor("Motro", "5241", "1.1", "1.0", testTags);
+		Class testClass = new Class("3.5", "cs333", testProf);
+		List<String> testPref = new ArrayList<String>();
+		testPref.add("0");
+		testPref.add("1");
+		testPref.add("0");
+		testPref.add("1");
+		testPref.add("1");
+		Student testStudent = new Student(testPref);
+		testStudent.addClass(testClass);
+		Analyzer testAnalyzer = new Analyzer();
+		assertEquals(0.33, testAnalyzer.profGPA(Double.parseDouble(testStudent.getSchedule().get(0).getProfessor().getGpa())));
+		assertEquals(0.3, testAnalyzer.profGPA(Double.parseDouble(testStudent.getSchedule().get(0).getProfessor().getRating())));
+		int[] testStudentArray = new int[5];
+		for(int i = 0; i < testStudent.getPreferences().size(); i++) {
+			testStudentArray[i] = Integer.parseInt(testStudent.getPreferences().get(i));
+		}
+		int[] testProfArray = new int[]{0, 1, 0, 1, 1};
+		assertEquals("0.24", String.format("%.2f", testAnalyzer.calcPrefWeight(testStudentArray, testProfArray)));
+	}
+}
